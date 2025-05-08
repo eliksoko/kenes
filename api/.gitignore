@@ -1,0 +1,6 @@
+.venv
+dist
+tmp
+instance
+__pycache__
+.env
