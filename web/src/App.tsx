@@ -1,22 +1,14 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Signin from './components/signin'
-import Signup from './components/signup'
 import Form from './components/form'
 import AppBar from './components/nav'
 import { Box } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useUtils } from './utils'
 
-export default function App() {
-  // useAuth
-  const [width, setWidth] = useState<number>(window.innerWidth);
-  const handleSize = () => setWidth(window.innerWidth);
-  const isMobile = width < 500;
-
-  useEffect(() => {
-    window.addEventListener('resize', handleSize);
-    return () => window.removeEventListener('resize', handleSize);
-  }, []);
-
+export default function App()
+{
+  const {isMobile} = useUtils()
+  
   return (
     <Box sx={{
       display: 'flex',
@@ -42,12 +34,20 @@ export default function App() {
         borderColor: '#607d8b'
       }]}>
         <AppBar sx={{bgcolor: '#607d8b'}}/>
-        <Routes>
-          <Route index path="/" element={<Form />} />
-          <Route path="signin" element={<Signin />} />
-          <Route path="signup" element={<Signup />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            mx: 'auto',
+            gap: 1,
+            p: 4
+          }}>
+          <Routes>
+              <Route index path="/" element={<Form />} />
+              <Route path="signin" element={<Signin  />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Box>
       </Box>  
     </Box>  
   )

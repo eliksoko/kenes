@@ -1,66 +1,41 @@
-import { useNavigate } from "react-router-dom";
-import { type ChangeEvent, type SyntheticEvent } from "react";
-import { useState } from "react";
-import { useAuth } from "../auth";
-import Button from '@mui/material/Button';
-import { Box, IconButton, InputAdornment, TextField } from "@mui/material";
+import { Navigate, useNavigate } from "react-router-dom";
+import { Button, Box, FormHelperText, IconButton, InputAdornment, TextField } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { validate, type Errors, type Values } from "../data";
-import api from "../api";
+import { useForm } from "../data";
+import { useAuth } from "../auth";
 
 export default function()
 {
   const navigate = useNavigate();
-  const {signIn} = useAuth();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [errors, setErrors] = useState<Errors>({});
-  const [values, setValues] = useState<Values>({
-    username: '',
+  const {token,signIn} = useAuth();
+  const {loading,submit,errors,values,setValues} = useForm({ 
+    username: '', 
     password: '',
-    showPassword: false,
-  });
-  
-  const handleChange = (type:string, e:ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => 
-    setValues({ ...values, [type]: e.target.value });
-
-  const handleCheckbox = () => 
-    setValues({ ...values, showPassword: !values.showPassword });
-
-  const handleSubmit = async (e:SyntheticEvent) => {
-    e.preventDefault();
-    setLoading(true)
-    const errors = validate(values)
-    if (Object.keys(errors).length === 0) {
-      const error = await signIn(values)
-      if(error) errors.data = error
-      else navigate('/')
-    }
-    setErrors(errors);
-    setLoading(false);
-  }
-  
+    showPassword: false
+  })
+  if(token) return <Navigate to="/" />
   return (
     <Box
       component="form"
-      onSubmit={handleSubmit}
+      onSubmit={e => submit(e, async function()
+      {
+        const {username, password} = values
+        const error = await signIn(username, password)
+        if(error) return error
+        navigate('/')
+      })}
       noValidate
-      autoComplete="off"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        mx: 'auto',
-        gap: 1,
-        p: 8
-      }}>
+      display='contents'
+      autoComplete='off'>
       <TextField
         required
         label="Username"
         type="username"
         size="small"
         value={values.username}
-        onChange={e => handleChange('username', e)}
+        onChange={e => setValues({ ...values, username: e.target.value })}
         error={Boolean(errors.username)}
-        helperText={errors.username ?? " "}
+        helperText={errors.username ?? ' '}
         variant="outlined"
       />
       <TextField
@@ -69,26 +44,26 @@ export default function()
         variant="outlined"
         size="small"
         error={Boolean(errors.password)}
-        helperText={errors.password || ' '}
+        helperText={errors.password ?? ' '}
         type={values.showPassword ? "text" : "password"}
+        value={values.password}
+        onChange={e => setValues({ ...values, password: e.target.value })}
         slotProps={{
           input: {
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
                   aria-label={values.showPassword ? 'Hide password' : 'Show password'}
-                  onClick={handleCheckbox}
-                  edge="end"
-                >
-                  {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                  onClick={() => setValues({ ...values, showPassword: !values.showPassword })}
+                  edge="end">
+                {values.showPassword2 ? <Visibility /> : <VisibilityOff />}
                 </IconButton>
               </InputAdornment>
             ),
           },
         }}
-        value={values.password}
-        onChange={e => handleChange('password', e)}
       />
+      <FormHelperText error={Boolean(errors.data)} sx={{ minHeight: '2em' }}>{errors?.data && errors.data}</FormHelperText>
       <Button loading={loading} type="submit" variant="contained" sx={{m:'auto'}}>Login</Button>
     </Box>
   )

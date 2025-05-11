@@ -1,5 +1,4 @@
 import { AuthProvider } from './auth'
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 import { createTheme, ThemeProvider } from '@mui/material'
@@ -26,13 +25,11 @@ const theme = createTheme({
 });
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
     <AuthProvider>
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <App />
         </ThemeProvider>
-      </BrowserRouter>
+        </BrowserRouter>
     </AuthProvider>
-  </StrictMode>
 )
