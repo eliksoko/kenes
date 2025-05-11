@@ -1,12 +1,11 @@
 import { Navigate } from "react-router-dom"
 import { useAuth } from "../auth"
-import { Box, CircularProgress, Grid, IconButton, Modal, Paper, Typography } from "@mui/material"
+import { Box, IconButton, Modal, Paper, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
 import api from "../api"
 import type { Item, Order } from "../data"
 import { DataGrid, type GridColDef, type GridRowParams } from "@mui/x-data-grid"
 import CloseIcon from "@mui/icons-material/Close"
-import { useUtils } from "../utils"
 
 const columns: GridColDef[] = [
   { field: 'orderid', headerName: 'ID', width: 70 },
@@ -18,7 +17,6 @@ const columns: GridColDef[] = [
 
 export default function() {
   const { token } = useAuth()
-  const {isMobile} = useUtils()
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Order[]>()
   const [show, setShow] = useState<Item>();
